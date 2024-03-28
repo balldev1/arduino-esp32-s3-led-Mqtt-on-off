@@ -1,15 +1,71 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
 
-void setup() {
-  for (int pin = 0; pin <= 39; pin++) { // ลูปผ่านทุกขาของ ESP32 (0-39)
-    pinMode(pin, OUTPUT); // กำหนดโหมดของขาเป็น OUTPUT
+// wifi
+const char* ssid = "wirelessguru";
+const char* pass = "guru54510250";
+
+// MQTT Broker
+const char* mqtt_server = "broker.mqtt.cool";
+const int mqtt_port = 1883;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+// function.wifi
+void setupWifi(){
+  delay(100);
+  Serial.print("\nConnecting to ");
+  Serial.println(ssid);
+
+  // connect.wifi
+  WiFi.begin(ssid, pass);
+
+  // !connect
+  while(WiFi.status() != WL_CONNECTED){
+    delay(100);
+    Serial.print(".");
   }
+
+  // => conect.wifi
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 }
 
+// Function to connect MQTT
+void setupMqtt() {
+  client.setServer(mqtt_server, mqtt_port);
+}
+
+// setup.wifi
+void setup() {
+  Serial.begin(115200); // เริ่มต้น Serial Monitor baud rate esp32 === 115200
+  setupWifi(); // เชื่อมต่อ WiFi
+  setupMqtt(); // เชื่อมต่อ Mqtt
+}
+
+// สั่งทำงาน 
 void loop() {
-  for (int pin = 0; pin <= 39; pin++) { // ลูปผ่านทุกขาของ ESP32 (0-39)
-    digitalWrite(pin, HIGH); // ส่งสัญญาณ HIGH ไปยังขาที่ pin
-    delay(1000); // รอ 1 วินาที
-    digitalWrite(pin, LOW); // ส่งสัญญาณ LOW ไปยังขาที่ pin
+  if (!client.connected()) {
+    // wait connect
+    Serial.println("Attempting MQTT connection...");
+    // connect
+    if (client.connect("ESP32Client")) {
+      Serial.println("connected");
+    } else {
+      // !connect
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+      return;
+    }
   }
+  
+  client.loop();
+  client.publish("topic", "hello");
+  delay(5000);
 }
