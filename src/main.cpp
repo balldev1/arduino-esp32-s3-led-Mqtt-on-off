@@ -52,9 +52,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
 
     // Turn on all pins
-    for (int pin = 0; pin <= 39; pin++) {
-      digitalWrite(pin, LOW); // HIGH
-    }
+    // for (int pin = 0; pin <= 39; pin++) {
+    //   digitalWrite(pin, LOW); // HIGH
+    // }
 
     delay(1000);
   } else {
