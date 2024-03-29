@@ -15,4 +15,4 @@ pio lib install 89
 
 <!-- Serial.println() เพื่อแสดง "HELLO WORLD" -->
 
-
+https://www.youtube.com/watch?v=650rLn6Ir3s
